@@ -37,8 +37,8 @@ async def main():
         await yt.save_cookies(config.COOKIES_URL)
 
     sudoers = await db.get_sudoers()
-    app.sudoers.update(sudoers)
-    app.bl_users.update(await db.get_blacklisted())
+    app.sudoers += sudoers
+    app.bl_users = await db.get_blacklisted()
     logger.info(f"Loaded {len(app.sudoers)} sudo users.")
 
     await idle()

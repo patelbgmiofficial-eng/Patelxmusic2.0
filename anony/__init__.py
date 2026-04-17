@@ -2,12 +2,12 @@
 # Licensed under the MIT License.
 # This file is part of AnonXMusic
 
-
 import time
 import asyncio
 import logging
 from logging.handlers import RotatingFileHandler
 
+# ===== LOGGING =====
 logging.basicConfig(
     format="[%(asctime)s - %(levelname)s] - %(name)s: %(message)s",
     datefmt="%d-%b-%y %H:%M:%S",
@@ -17,23 +17,26 @@ logging.basicConfig(
     ],
     level=logging.INFO,
 )
+
 logging.getLogger("httpx").setLevel(logging.ERROR)
 logging.getLogger("ntgcalls").setLevel(logging.CRITICAL)
 logging.getLogger("pymongo").setLevel(logging.ERROR)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 __version__ = "3.0.2"
 
+# ===== CONFIG =====
 from config import Config
-
 config = Config()
 config.check()
+
 tasks = []
 boot = time.time()
 
+# ===== CORE IMPORTS =====
 from anony.core.bot import Bot
 app = Bot()
 
@@ -51,19 +54,30 @@ lang = Language()
 
 from anony.core.telegram import Telegram
 from anony.core.youtube import YouTube
+
 tg = Telegram()
 yt = YouTube()
 
 from anony.helpers import Queue, Thumbnail
+
 queue = Queue()
 thumb = Thumbnail()
 
 from anony.core.calls import TgCall
 anon = TgCall()
 
+# ===== TEMPMAIL MODULE LOAD (FIX ADDED) =====
+try:
+    from anony import tempmail
+    logger.info("Tempmail module loaded successfully")
+except Exception as e:
+    logger.error(f"Tempmail module failed to load: {e}")
 
+
+# ===== STOP FUNCTION =====
 async def stop() -> None:
     logger.info("Stopping...")
+
     for task in tasks:
         task.cancel()
         try:
